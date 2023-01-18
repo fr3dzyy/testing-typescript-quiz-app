@@ -1,18 +1,23 @@
-import React from 'react'
+import React, { useCallback, useEffect } from 'react'
 
 import { AnswerObject } from '../App'
 import styled from 'styled-components'
-
-const START_TIME = 10
+import { START_TIME } from '../config'
+import { fetchQuestion, Question } from '../API'
+import { GameConfig } from '../interfaces/GameConfig'
 
 function percentage(partialValue: number, totalValue: number) {
   return (100 * partialValue) / totalValue
 }
 
 type Props = {
-  question: string
-  answers: string[]
-  callback: (answer: string) => any
+  gameConfig: GameConfig
+  callback: (
+    question: Question,
+    answer: string,
+    secondsleft: number,
+    difficulty: string
+  ) => void
   isWaitingForNextQuestion: boolean
   userAnswer: AnswerObject | undefined
   questionNum: number
@@ -20,8 +25,7 @@ type Props = {
 }
 
 const QuestionCard: React.FC<Props> = ({
-  question,
-  answers,
+  gameConfig,
   callback,
   userAnswer,
   questionNum,
@@ -29,33 +33,59 @@ const QuestionCard: React.FC<Props> = ({
   isWaitingForNextQuestion,
 }) => {
   const [countdown, setCountdown] = React.useState(START_TIME)
+  const [question, setQuestion] = React.useState<Question | undefined>()
+  const getQuestion = useCallback(async () => {
+    const newQuestion = await fetchQuestion(
+      gameConfig.categories,
+      gameConfig.difficulty,
+      gameConfig.region
+    )
+    setQuestion(newQuestion)
+  }, [gameConfig])
+
+  useEffect(() => {
+    if (questionNum === -1) {
+      return
+    }
+    setCountdown(START_TIME)
+    getQuestion()
+    setQuestion(undefined)
+  }, [getQuestion, questionNum])
 
   React.useEffect(() => {
+    if (!question) {
+      return
+    }
     const interval = setInterval(() => {
       if (countdown < 1) {
-        callback('ts')
+        callback(question, 'ts', 0, question.difficulty)
         setCountdown(START_TIME)
       } else if (!isWaitingForNextQuestion) {
         setCountdown((value) => value - 1)
       }
     }, 1000)
     return () => clearInterval(interval)
-  }, [callback, countdown, isWaitingForNextQuestion])
+  }, [callback, countdown, isWaitingForNextQuestion, question])
 
   const handleClick = (answer: string) => {
-    callback(answer)
+    if (!question) {
+      return
+    }
+    callback(question, answer, countdown, question?.difficulty)
     setCountdown(START_TIME)
   }
-
+  if (!question) {
+    return <> Loading question. </>
+  }
   return (
     <QuestionContainer>
       <QuestionNumber>
-        Question: {questionNum} / {totalQuestions}
+        Question: {(questionNum += 1)} / {totalQuestions}
       </QuestionNumber>
 
-      <Question>{question}</Question>
+      <Question1>{question.question}</Question1>
       <Ul>
-        {answers?.map((answer) => (
+        {question.answers.map((answer) => (
           <li key={answer}>
             <Button
               disabled={!!userAnswer}
@@ -74,8 +104,6 @@ const QuestionCard: React.FC<Props> = ({
             style={{
               width: `${percentage(countdown, START_TIME)}% `,
               background: countdown < 4 ? 'red' : 'black',
-              height: '20px',
-              transition: 'all 1s linear',
             }}
           />
         </>
@@ -98,9 +126,11 @@ const Button = styled.button`
 
 const CountDownDiv = styled.div`
   margin: 15px 0 15px;
+  height: 20px;
+  transition: all 1s linear;
 `
 
-const Question = styled.h3`
+const Question1 = styled.h3`
   font-size: 30px;
   margin: 25px 0 25px;
 `

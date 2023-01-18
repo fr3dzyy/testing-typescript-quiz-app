@@ -4,6 +4,7 @@ import { Difficulty } from './enums/Difficulty'
 import { Region } from './enums/Region'
 
 export type Question = {
+  answers: string[]
   category: string
   type: string
   difficulty: string
@@ -22,27 +23,25 @@ const randomDifficulties = (difficulty: string) => {
   return difficulty
 }
 
-export const fetchQuestions = async (
-  // amount: number,
+export const fetchQuestion = async (
   categories: Categories,
   difficulty: Difficulty = Difficulty.EASY,
-  limit: Number = 0,
   region: Region = Region.GB
-): Promise<QuestionState[]> => {
-  const url = `https://the-trivia-api.com/api/questions?limit=${limit}&region=${region}&categories=${categories}&difficulty=${randomDifficulties(
+): Promise<QuestionState> => {
+  const url = `https://the-trivia-api.com/api/questions?limit=1&region=${region}&categories=${categories}&difficulty=${randomDifficulties(
     difficulty
   )}`
   const quizData = await (await fetch(url)).json()
-  console.log(difficulty)
   console.log(url)
   console.log(quizData)
   console.log(Categories)
 
-  return quizData.map((question: Question) => ({
+  const formattedQuestion = quizData.map((question: Question) => ({
     ...question,
     answers: shuffleArray([
       ...question.incorrectAnswers,
       question.correctAnswer,
     ]),
   }))
+  return formattedQuestion[0]
 }

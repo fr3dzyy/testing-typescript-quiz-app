@@ -22,8 +22,6 @@ export default function IntroForm({ onSubmit }: Props) {
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const enteredName = event.target.value
     setPlayerName(enteredName)
-    console.log(playerName)
-    console.log(categoryOptions)
   }
 
   return (
@@ -64,16 +62,6 @@ export default function IntroForm({ onSubmit }: Props) {
         </CategoryButton>
       )}
 
-      {/* {!visible && (
-        <Select onChange={(e) => setCategory(e.target.value as Categories)}>
-          {categoryOptions.slice(7).map((options, index) => (
-            <option value={options.id} key={index}>
-              {options.value}
-            </option>
-          ))}
-        </Select>
-      )} */}
-
       {!visible && (
         <CategorySection>
           {categoryOptions.slice(7).map((options, index) => (
@@ -89,7 +77,7 @@ export default function IntroForm({ onSubmit }: Props) {
       )}
 
       <StartButton
-        disabled={!playerName}
+        disabled={!playerName || !category}
         onClick={() =>
           onSubmit({
             categories: category as Categories,

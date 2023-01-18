@@ -4,60 +4,93 @@ import styled from 'styled-components'
 import QuestionCard from './components/QuestionCard'
 import IntroForm from './components/Introform'
 
-import { fetchQuestions, QuestionState } from './API'
-import { TOTAL_QUESTIONS } from './config'
+import { Question } from './API'
+import { DIFFICULTY_POINTS, TOTAL_QUESTIONS } from './config'
 import { GameConfig } from './interfaces/GameConfig'
+import { Difficulty } from './enums/Difficulty'
 
 export type AnswerObject = {
   answer: string
   correct: boolean
   correctAnswer: string
   question: string
+  difficulty: Difficulty
+  time: number
 }
 
 export default function App() {
   const [complete, setComplete] = React.useState<boolean>(false)
   const [gameConfig, setGameConfig] = React.useState<GameConfig>()
   const [gameOver, setGameOver] = React.useState<boolean>(true)
-  const [number, setNumber] = React.useState<number>(0)
-  const [score, setScore] = React.useState<number>(0)
   const [userAnswers, setUserAnswers] = React.useState<AnswerObject[]>([])
-  const [questions, setQuestions] = React.useState<QuestionState[]>([])
+  const [currentQuestion, setCurrentQuestion] = React.useState<number>(-1)
 
   const startQuiz = async (gameConfig: GameConfig) => {
-    const newQuestions = await fetchQuestions(
-      gameConfig.categories,
-      gameConfig.difficulty,
-      TOTAL_QUESTIONS,
-      gameConfig.region
-    )
     setGameConfig(gameConfig)
     setComplete(false)
-    setQuestions(newQuestions)
+    setCurrentQuestion(0)
     setGameOver(false)
   }
 
-  const checkAnswer = (answer: string) => {
+  const checkAnswer = (
+    question: Question,
+    answer: string,
+    secondsleft: number,
+    difficulty: string
+  ) => {
     if (!gameOver) {
-      const correct = questions[number].correctAnswer === answer
-      if (correct) setScore((prev) => prev + 1)
+      const correct = question.correctAnswer === answer
+
       const answerObject = {
-        question: questions[number].question,
-        correctAnswer: questions[number].correctAnswer,
+        question: question.question,
+        correctAnswer: question.correctAnswer,
         answer,
         correct,
+        difficulty: difficulty as Difficulty,
+        time: secondsleft,
       }
+      console.log(answerObject)
+
       setUserAnswers((prev) => [...prev, answerObject])
     }
   }
 
   const handleNext = () => {
-    if (number < TOTAL_QUESTIONS - 1) setNumber((prev) => prev + 1)
+    if (currentQuestion < TOTAL_QUESTIONS - 1)
+      setCurrentQuestion((prev) => prev + 1)
     else setComplete(true)
   }
 
+  function calculateFinalScore(answers: AnswerObject[]) {
+    let finalScore = 0
+    let totalRightAnswers = 0
+    let longestStreak = 0
+    let currentStreak = 0
+
+    for (let i = 0; i < answers.length; i++) {
+      const a = answers[i]
+
+      if (a.correct) {
+        finalScore += DIFFICULTY_POINTS[a.difficulty] * a.time
+        currentStreak++
+        totalRightAnswers++
+      }
+
+      if (!a.correct || i + 1 === answers.length) {
+        if (currentStreak > longestStreak) {
+          longestStreak = currentStreak
+        }
+        currentStreak = 0
+      }
+    }
+    if (longestStreak >= 3) {
+      finalScore += totalRightAnswers * longestStreak
+    }
+    return finalScore
+  }
+
   const isWaitingForNextQuestion =
-    !gameOver && !complete && !!userAnswers[number]
+    !gameOver && !complete && !!userAnswers[currentQuestion]
 
   return (
     <>
@@ -69,20 +102,21 @@ export default function App() {
         {complete && (
           <>
             <ScoreParagraph>Your score is:</ScoreParagraph>
-            <ScoreParagraph> {score} / 9</ScoreParagraph>
+            <ScoreParagraph>{calculateFinalScore(userAnswers)}</ScoreParagraph>
           </>
         )}
 
-        {!gameOver && !complete && (
+        {!gameOver && !complete && gameConfig && (
           <>
             <PlayerName>Player-name: {gameConfig?.playerName}</PlayerName>
 
             <QuestionCard
-              questionNum={number + 1}
-              question={questions[number].question}
-              answers={questions[number].answers}
+              questionNum={currentQuestion}
+              gameConfig={gameConfig}
               totalQuestions={TOTAL_QUESTIONS}
-              userAnswer={userAnswers ? userAnswers[number] : undefined}
+              userAnswer={
+                userAnswers ? userAnswers[currentQuestion] : undefined
+              }
               callback={checkAnswer}
               isWaitingForNextQuestion={isWaitingForNextQuestion}
             />
