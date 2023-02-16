@@ -5,25 +5,25 @@ import QuestionCard from './components/QuestionCard'
 import IntroForm from './components/Introform'
 
 import { Question } from './API'
-import { DIFFICULTY_POINTS, TOTAL_QUESTIONS } from './config'
-import { GameConfig } from './interfaces/GameConfig'
+import { DIFFICULTY_POINTS, TOTAL_QUESTIONS } from './GameConfig'
+import { GameConfig } from './GameConfig'
 import { Difficulty } from './enums/Difficulty'
 
 export type AnswerObject = {
   answer: string
   correct: boolean
   correctAnswer: string
-  question: string
   difficulty: Difficulty
+  question: string
   time: number
 }
 
 export default function App() {
+  const [currentQuestion, setCurrentQuestion] = React.useState<number>(-1)
   const [complete, setComplete] = React.useState<boolean>(false)
   const [gameConfig, setGameConfig] = React.useState<GameConfig>()
   const [gameOver, setGameOver] = React.useState<boolean>(true)
   const [userAnswers, setUserAnswers] = React.useState<AnswerObject[]>([])
-  const [currentQuestion, setCurrentQuestion] = React.useState<number>(-1)
 
   const startQuiz = async (gameConfig: GameConfig) => {
     setGameConfig(gameConfig)
@@ -49,7 +49,6 @@ export default function App() {
         difficulty: difficulty as Difficulty,
         time: secondsleft,
       }
-      console.log(answerObject)
 
       setUserAnswers((prev) => [...prev, answerObject])
     }

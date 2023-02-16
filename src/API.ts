@@ -1,4 +1,3 @@
-import { shuffleArray } from './utils'
 import { Categories } from './enums/Categories'
 import { Difficulty } from './enums/Difficulty'
 import { Region } from './enums/Region'
@@ -6,11 +5,11 @@ import { Region } from './enums/Region'
 export type Question = {
   answers: string[]
   category: string
-  type: string
-  difficulty: string
-  question: string
   correctAnswer: string
+  difficulty: string
   incorrectAnswers: string[]
+  type: string
+  question: string
 }
 
 export type QuestionState = Question & { answers: string[] }
@@ -23,6 +22,10 @@ const randomDifficulties = (difficulty: string) => {
   return difficulty
 }
 
+const shuffleArray = (array: any[]) => {
+  return [...array].sort(() => Math.random() - 0.5)
+}
+
 export const fetchQuestion = async (
   categories: Categories,
   difficulty: Difficulty = Difficulty.EASY,
@@ -31,10 +34,9 @@ export const fetchQuestion = async (
   const url = `https://the-trivia-api.com/api/questions?limit=1&region=${region}&categories=${categories}&difficulty=${randomDifficulties(
     difficulty
   )}`
+
   const quizData = await (await fetch(url)).json()
   console.log(url)
-  console.log(quizData)
-  console.log(Categories)
 
   const formattedQuestion = quizData.map((question: Question) => ({
     ...question,

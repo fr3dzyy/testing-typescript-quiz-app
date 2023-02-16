@@ -2,15 +2,14 @@ import React, { useCallback, useEffect } from 'react'
 
 import { AnswerObject } from '../App'
 import styled from 'styled-components'
-import { START_TIME } from '../config'
+import { GameConfig, START_TIME } from '../GameConfig'
 import { fetchQuestion, Question } from '../API'
-import { GameConfig } from '../interfaces/GameConfig'
 
 function percentage(partialValue: number, totalValue: number) {
   return (100 * partialValue) / totalValue
 }
 
-type Props = {
+type QuestionCardProps = {
   gameConfig: GameConfig
   callback: (
     question: Question,
@@ -24,7 +23,7 @@ type Props = {
   totalQuestions: number
 }
 
-const QuestionCard: React.FC<Props> = ({
+const QuestionCard: React.FC<QuestionCardProps> = ({
   gameConfig,
   callback,
   userAnswer,
@@ -34,6 +33,7 @@ const QuestionCard: React.FC<Props> = ({
 }) => {
   const [countdown, setCountdown] = React.useState(START_TIME)
   const [question, setQuestion] = React.useState<Question | undefined>()
+
   const getQuestion = useCallback(async () => {
     const newQuestion = await fetchQuestion(
       gameConfig.categories,
@@ -52,13 +52,14 @@ const QuestionCard: React.FC<Props> = ({
     setQuestion(undefined)
   }, [getQuestion, questionNum])
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!question) {
       return
     }
+
     const interval = setInterval(() => {
       if (countdown < 1) {
-        callback(question, 'ts', 0, question.difficulty)
+        callback(question, 'No answer', 0, question.difficulty)
         setCountdown(START_TIME)
       } else if (!isWaitingForNextQuestion) {
         setCountdown((value) => value - 1)
@@ -74,16 +75,22 @@ const QuestionCard: React.FC<Props> = ({
     callback(question, answer, countdown, question?.difficulty)
     setCountdown(START_TIME)
   }
+
   if (!question) {
-    return <> Loading question. </>
+    return (
+      <>
+        <H3>Loading question!</H3>
+      </>
+    )
   }
+
   return (
     <QuestionContainer>
       <QuestionNumber>
         Question: {(questionNum += 1)} / {totalQuestions}
       </QuestionNumber>
 
-      <Question1>{question.question}</Question1>
+      <QuestionTitle>{question.question}</QuestionTitle>
       <Ul>
         {question.answers.map((answer) => (
           <li key={answer}>
@@ -114,6 +121,11 @@ const QuestionCard: React.FC<Props> = ({
 
 export default QuestionCard
 
+const H3 = styled.div`
+  font-size: 1.5rem;
+  margin-top: 2rem;
+`
+
 const Button = styled.button`
   border: none;
   border-radius: 5px;
@@ -130,7 +142,7 @@ const CountDownDiv = styled.div`
   transition: all 1s linear;
 `
 
-const Question1 = styled.h3`
+const QuestionTitle = styled.h3`
   font-size: 30px;
   margin: 25px 0 25px;
 `
