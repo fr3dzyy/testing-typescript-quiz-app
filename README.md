@@ -1,6 +1,13 @@
 # Quiz-app with typescript and tests.
 
-Project in the course `Tests and Typescript`.
+Project in the course `Tests and TypeScript`.
+
+To play: First enter your name, then select difficulty, region and category and click "Start Quiz".
+You will have 10 seconds to answer before the time runs out, and you can move on with the next question.
+
+It's a total of 9 questions and you will see the total score when the game is finished.
+
+To play again, just click the headline "Let's Quiz". Have fun!
 
 ## Available Scripts
 
