@@ -1,6 +1,6 @@
 # Quiz-app with typescript and tests.
 
-
+Project in the course `Tests and Typescript`.
 
 ## Available Scripts
 
