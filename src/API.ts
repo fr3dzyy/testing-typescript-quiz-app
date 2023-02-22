@@ -1,4 +1,4 @@
-import { Categories } from './enums/Categories'
+import { Category } from './enums/Category'
 import { Difficulty } from './enums/Difficulty'
 import { Region } from './enums/Region'
 
@@ -27,7 +27,7 @@ const shuffleArray = (array: any[]) => {
 }
 
 export const fetchQuestion = async (
-  categories: Categories,
+  categories: Category,
   difficulty: Difficulty = Difficulty.EASY,
   region: Region = Region.GB
 ): Promise<QuestionState> => {
@@ -35,7 +35,12 @@ export const fetchQuestion = async (
     difficulty
   )}`
 
-  const quizData = await (await fetch(url)).json()
+  const response = await fetch(url)
+
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error('Service not available')
+  }
+  const quizData = await response.json()
   console.log(url)
 
   const formattedQuestion = quizData.map((question: Question) => ({

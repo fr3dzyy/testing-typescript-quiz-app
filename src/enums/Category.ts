@@ -1,4 +1,4 @@
-export enum Categories {
+export enum Category {
   Arts_And_Litterature = 'arts_and_literature',
   Film_And_TV = 'film_and_tv',
   Food_And_Drink = 'food_and_drink',

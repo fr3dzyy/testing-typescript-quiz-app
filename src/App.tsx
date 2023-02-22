@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import styled from 'styled-components'
-import QuestionCard from './components/QuestionCard'
 import IntroForm from './components/Introform'
+import QuestionCard from './components/QuestionCard'
 
 import { Question } from './API'
-import { DIFFICULTY_POINTS, TOTAL_QUESTIONS } from './GameConfig'
-import { GameConfig } from './GameConfig'
+import { DIFFICULTY_POINTS, GameConfig, TOTAL_QUESTIONS } from './GameConfig'
+import { categoryOptions } from './options'
+import { Category } from './enums/Category'
 import { Difficulty } from './enums/Difficulty'
 
 export type AnswerObject = {
@@ -24,6 +25,14 @@ export default function App() {
   const [gameConfig, setGameConfig] = React.useState<GameConfig>()
   const [gameOver, setGameOver] = React.useState<boolean>(true)
   const [userAnswers, setUserAnswers] = React.useState<AnswerObject[]>([])
+  const [questionCountdown, setQuestionCountdown] = React.useState(3)
+  const [isReady, setIsReady] = React.useState(false)
+
+  const wasLastQuestion = currentQuestion === TOTAL_QUESTIONS - 1
+
+  const threeRandomCategories = [...categoryOptions]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
 
   const startQuiz = async (gameConfig: GameConfig) => {
     setGameConfig(gameConfig)
@@ -54,10 +63,16 @@ export default function App() {
     }
   }
 
-  const handleNext = () => {
-    if (currentQuestion < TOTAL_QUESTIONS - 1)
+  const handleNext = (category?: string) => {
+    if (currentQuestion < TOTAL_QUESTIONS - 1) {
+      if (category) {
+        setGameConfig((gc) => {
+          return { ...gc, category } as GameConfig
+        })
+      }
+      setIsReady(true)
       setCurrentQuestion((prev) => prev + 1)
-    else setComplete(true)
+    } else setComplete(true)
   }
 
   function calculateFinalScore(answers: AnswerObject[]) {
@@ -82,15 +97,38 @@ export default function App() {
         currentStreak = 0
       }
     }
+
     if (longestStreak >= 3) {
       finalScore += totalRightAnswers * longestStreak
     }
+
     return finalScore
   }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (questionCountdown < 1) {
+        setIsReady(false)
+        setQuestionCountdown(3)
+      } else if (isReady) {
+        setQuestionCountdown((value) => value - 1)
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [questionCountdown, isReady])
 
   const isWaitingForNextQuestion =
     !gameOver && !complete && !!userAnswers[currentQuestion]
 
+  const wasCorrect = userAnswers[currentQuestion]?.correct
+  if (isReady) {
+    return (
+      <Container>
+        <H1>Get ready for the next question</H1>
+        <QuestionCountdown> {questionCountdown}</QuestionCountdown>
+      </Container>
+    )
+  }
   return (
     <>
       <Container>
@@ -121,14 +159,48 @@ export default function App() {
             />
           </>
         )}
+        {isWaitingForNextQuestion &&
+          !wasCorrect &&
+          !isReady &&
+          !wasLastQuestion && (
+            <NextQuestionBtn onClick={() => handleNext()}>
+              Next Question
+            </NextQuestionBtn>
+          )}
 
-        {isWaitingForNextQuestion && (
-          <NextQuestionBtn onClick={handleNext}>Next Question</NextQuestionBtn>
+        {isWaitingForNextQuestion && wasLastQuestion && (
+          <NextQuestionBtn onClick={() => handleNext()}>
+            Finish game
+          </NextQuestionBtn>
         )}
+
+        {isWaitingForNextQuestion &&
+          wasCorrect &&
+          !isReady &&
+          !wasLastQuestion &&
+          threeRandomCategories.map((category) => (
+            <CategoryButton
+              key={category.id}
+              onClick={() => handleNext(category.id as Category)}
+            >
+              {category.value}
+            </CategoryButton>
+          ))}
       </Container>
     </>
   )
 }
+
+const CategoryButton = styled.button`
+  border: none;
+  border-radius: 5px;
+
+  font-size: larger;
+  height: auto;
+  margin: 5px;
+  padding: 10px;
+  width: 150px;
+`
 
 const Container = styled.div`
   align-items: center;
@@ -158,6 +230,10 @@ const PlayerName = styled.h2``
 const QuizComplete = styled.h3`
   font-size: 35px;
   margin-bottom: 25px;
+`
+
+const QuestionCountdown = styled.p`
+  font-size: 4rem;
 `
 
 const ScoreParagraph = styled.p`

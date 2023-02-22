@@ -3,19 +3,19 @@ import styled from 'styled-components'
 
 import { categoryOptions, difficultiesOptions, regionOptions } from '../options'
 
-import { Categories } from '../enums/Categories'
+import { Category } from '../enums/Category'
 import { Difficulty } from '../enums/Difficulty'
-import { Region } from '../enums/Region'
 import { GameConfig } from '../GameConfig'
+import { Region } from '../enums/Region'
 
 interface Props {
   onSubmit: (gameConfig: GameConfig) => any
 }
 
 export default function IntroForm({ onSubmit }: Props) {
-  const [category, setCategory] = useState<Categories>()
+  const [category, setCategory] = useState<Category>()
   const [difficulty, setDifficulty] = useState<string>(Difficulty.EASY)
-  const [playerName, setPlayerName] = useState<string>('1')
+  const [playerName, setPlayerName] = useState<string>('')
   const [region, setRegion] = useState<Region>(Region.SE)
   const [visible, setVisible] = useState<boolean>(true)
 
@@ -80,7 +80,7 @@ export default function IntroForm({ onSubmit }: Props) {
         disabled={!playerName || !category}
         onClick={() =>
           onSubmit({
-            categories: category as Categories,
+            category: category as Category,
             playerName,
             difficulty: difficulty as Difficulty,
             region,

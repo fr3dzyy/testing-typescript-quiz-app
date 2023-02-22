@@ -1,4 +1,4 @@
-import { Categories } from './enums/Categories'
+import { Category } from './enums/Category'
 import { Difficulty } from './enums/Difficulty'
 import { Region } from './enums/Region'
 
@@ -15,14 +15,14 @@ export const regionOptions = [
 ]
 
 export const categoryOptions = [
-  { id: Categories.Arts_And_Litterature, value: 'Art & Literature' },
-  { id: Categories.Film_And_TV, value: 'Film & Tv' },
-  { id: Categories.Food_And_Drink, value: 'Food & Drink' },
-  { id: Categories.General_Knowledge, value: 'General Knowledge' },
-  { id: Categories.Geography, value: 'Geography' },
-  { id: Categories.History, value: 'History' },
-  { id: Categories.Music, value: 'Music' },
-  { id: Categories.Science, value: 'Science' },
-  { id: Categories.Society_And_Culture, value: 'Society And Culture' },
-  { id: Categories.Sport_And_Leisure, value: 'Sport And Leisure' },
+  { id: Category.Arts_And_Litterature, value: 'Art & Literature' },
+  { id: Category.Film_And_TV, value: 'Film & Tv' },
+  { id: Category.Food_And_Drink, value: 'Food & Drink' },
+  { id: Category.General_Knowledge, value: 'General Knowledge' },
+  { id: Category.Geography, value: 'Geography' },
+  { id: Category.History, value: 'History' },
+  { id: Category.Music, value: 'Music' },
+  { id: Category.Science, value: 'Science' },
+  { id: Category.Society_And_Culture, value: 'Society And Culture' },
+  { id: Category.Sport_And_Leisure, value: 'Sport And Leisure' },
 ]

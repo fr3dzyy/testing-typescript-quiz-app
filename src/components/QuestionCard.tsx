@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect } from 'react'
 
-import { AnswerObject } from '../App'
 import styled from 'styled-components'
+
+import { AnswerObject } from '../App'
 import { GameConfig, START_TIME } from '../GameConfig'
 import { fetchQuestion, Question } from '../API'
 
@@ -33,14 +34,19 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 }) => {
   const [countdown, setCountdown] = React.useState(START_TIME)
   const [question, setQuestion] = React.useState<Question | undefined>()
+  const [hasError, setHasError] = React.useState<boolean>(false)
 
   const getQuestion = useCallback(async () => {
-    const newQuestion = await fetchQuestion(
-      gameConfig.categories,
-      gameConfig.difficulty,
-      gameConfig.region
-    )
-    setQuestion(newQuestion)
+    try {
+      const newQuestion = await fetchQuestion(
+        gameConfig.category,
+        gameConfig.difficulty,
+        gameConfig.region
+      )
+      setQuestion(newQuestion)
+    } catch (error) {
+      setHasError(true)
+    }
   }, [gameConfig])
 
   useEffect(() => {
@@ -76,13 +82,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
     setCountdown(START_TIME)
   }
 
-  if (!question) {
-    return (
-      <>
-        <H3>Loading question!</H3>
-      </>
-    )
-  }
+  if (hasError) return <ErrorText>ERROR - API NOT AVAILABLE</ErrorText>
+
+  if (!question) return <H3>Loading question!</H3>
 
   return (
     <QuestionContainer>
@@ -121,11 +123,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 
 export default QuestionCard
 
-const H3 = styled.div`
-  font-size: 1.5rem;
-  margin-top: 2rem;
-`
-
 const Button = styled.button`
   border: none;
   border-radius: 5px;
@@ -140,6 +137,17 @@ const CountDownDiv = styled.div`
   margin: 15px 0 15px;
   height: 20px;
   transition: all 1s linear;
+`
+
+const H3 = styled.div`
+  font-size: 1.5rem;
+  margin-top: 2rem;
+`
+
+const ErrorText = styled(H3)`
+  background-color: black;
+  color: white;
+  padding: 5px 25px 5px;
 `
 
 const QuestionTitle = styled.h3`
