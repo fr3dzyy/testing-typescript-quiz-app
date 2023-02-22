@@ -1,6 +1,6 @@
 # Quiz-app with typescript and tests.
 
-Project in the course `Tests and TypeScript`.
+Project in the course `"Tests and TypeScript"`.
 
 To play: First enter your name, then select difficulty, region and category and click "Start Quiz".
 You will have 10 seconds to answer before the time runs out, and you can move on with the next question.
