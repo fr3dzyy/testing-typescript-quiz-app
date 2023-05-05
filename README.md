@@ -3,7 +3,10 @@
 Project in the course `Tests and TypeScript`.
 
 To play: First enter your name, then select difficulty, region and category and click "Start Quiz".
-You will have 10 seconds to answer before the time runs out, and you can move on with the next question.
+You will have 30 seconds to answer before the time runs out, and you can move on with the next question.
+When you press "next question" a timer will count down 3 seconds before you will see the next question.
+
+If you pick the correct answer on a question, you can choose a new randomized category by your choice.
 
 It's a total of 9 questions and you will see the total score when the game is finished.
 
