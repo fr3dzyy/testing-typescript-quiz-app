@@ -1,28 +1,30 @@
 import { loadFeature, defineFeature } from 'jest-cucumber'
+import { Category } from '../../enums/Category'
 
-const feature = loadFeature('./specs/features/calc.feature')
+const feature = loadFeature('./specs/features/category.feature')
 
-export function AddTwoNumbers(x: number, y: number): number {
-  return x + y
+export const getCategory = (category: string): Category => {
+  let value = category as Category
+  if (value === undefined) throw new Error('Category not found')
+
+  return value
 }
 
 defineFeature(feature, (test) => {
-  let calcResult: number = 0
-  let x: number
-  let y: number
+  let pickedCategory: Category
 
-  test('Add two numbers', ({ given, when, then }) => {
-    given(/^x: (\d+) and y: (\d+)$/, (arg0, arg1) => {
-      x = parseInt(arg0)
-      y = parseInt(arg1)
+  test('Pick a category', ({ given, when, then }) => {
+    given(/^category: ([a-zA-Z]+)$/, (category) => {
+      pickedCategory = getCategory(category)
     })
 
-    when('Calling the function to add two numbers', () => {
-      calcResult = AddTwoNumbers(x, y)
+    when('Check if the category is correct', () => {
+      if (pickedCategory !== Category.History)
+        throw new Error('Category not found')
     })
 
-    then(/^the result should be (\d+)$/, (expected) => {
-      expect(calcResult).toBe(parseInt(expected))
+    then(/^The picked category should be: ([a-zA-Z]+)$/, (expected) => {
+      expect(pickedCategory).toBe(expected)
     })
   })
 })

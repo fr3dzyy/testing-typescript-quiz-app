@@ -12,6 +12,10 @@ It's a total of 9 questions and you will see the total score when the game is fi
 
 To play again, just click the headline "Let's Quiz". Have fun!
 
+## Testing and design principles
+
+Unit & BDD tests. YAGNI, KISS & DRY.
+
 ## Available Scripts
 
 In the project directory, you can run:
