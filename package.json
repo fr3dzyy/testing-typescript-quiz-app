@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.26",
+    "cypress": "^12.14.0",
     "jest-cucumber": "^3.0.1"
   }
 }

@@ -1,6 +1,6 @@
 Feature: Category
 
   Scenario: Pick a category
-    Given category: history
+    Given category: music
     When Check if the category is correct
-    Then The picked category should be: history
+    Then The picked category should be: music
