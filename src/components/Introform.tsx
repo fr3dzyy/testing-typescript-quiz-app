@@ -35,7 +35,10 @@ export default function IntroForm({ onSubmit }: Props) {
       />
 
       <Label>Select Difficulty</Label>
-      <Select onChange={(e) => setDifficulty(e.target.value)}>
+      <Select
+        className="select-difficulty"
+        onChange={(e) => setDifficulty(e.target.value)}
+      >
         {difficultiesOptions.map((options, index) => (
           <option value={options.id} key={index}>
             {options.value}
@@ -43,7 +46,10 @@ export default function IntroForm({ onSubmit }: Props) {
         ))}
       </Select>
       <Label>Select Region</Label>
-      <SelectOption onChange={(e) => setRegion(e.target.value as Region)}>
+      <SelectOption
+        className="select-region"
+        onChange={(e) => setRegion(e.target.value as Region)}
+      >
         {regionOptions.map((options, index) => (
           <option value={options.id} key={index}>
             {options.value}
@@ -53,6 +59,7 @@ export default function IntroForm({ onSubmit }: Props) {
 
       {visible && (
         <CategoryButton
+          className="select-category"
           onClick={() => {
             categoryOptions.sort(() => Math.random() - 0.5)
             setVisible(!visible)
@@ -66,6 +73,7 @@ export default function IntroForm({ onSubmit }: Props) {
         <CategorySection>
           {categoryOptions.slice(7).map((options, index) => (
             <CategoryButton
+              className="select-categoryOption"
               onClick={() => setCategory(options.id)}
               value={options.id}
               key={index}
@@ -77,6 +85,7 @@ export default function IntroForm({ onSubmit }: Props) {
       )}
 
       <StartButton
+        className="start-quiz"
         disabled={!playerName || !category}
         onClick={() =>
           onSubmit({

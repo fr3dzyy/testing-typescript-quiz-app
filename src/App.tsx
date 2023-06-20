@@ -163,13 +163,16 @@ export default function App() {
           !wasCorrect &&
           !isReady &&
           !wasLastQuestion && (
-            <NextQuestionBtn onClick={() => handleNext()}>
+            <NextQuestionBtn
+              className="next-question"
+              onClick={() => handleNext()}
+            >
               Next Question
             </NextQuestionBtn>
           )}
 
         {isWaitingForNextQuestion && wasLastQuestion && (
-          <NextQuestionBtn onClick={() => handleNext()}>
+          <NextQuestionBtn className="finish-game" onClick={() => handleNext()}>
             Finish game
           </NextQuestionBtn>
         )}
@@ -180,6 +183,7 @@ export default function App() {
           !wasLastQuestion &&
           threeRandomCategories.map((category) => (
             <CategoryButton
+              className="next-question"
               key={category.id}
               onClick={() => handleNext(category.id as Category)}
             >

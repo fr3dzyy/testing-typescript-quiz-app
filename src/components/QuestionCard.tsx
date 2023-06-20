@@ -97,6 +97,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         {question.answers.map((answer) => (
           <li key={answer}>
             <Button
+              className="answer-button"
               disabled={!!userAnswer}
               value={answer}
               onClick={() => handleClick(answer)}
