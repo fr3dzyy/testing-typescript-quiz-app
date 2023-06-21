@@ -77,6 +77,8 @@ export default function App() {
 
   function calculateFinalScore(answers: AnswerObject[]) {
     let finalScore = 0
+    let gameScore = 0
+    let streakScore = 0
     let totalRightAnswers = 0
     let longestStreak = 0
     let currentStreak = 0
@@ -85,7 +87,7 @@ export default function App() {
       const a = answers[i]
 
       if (a.correct) {
-        finalScore += DIFFICULTY_POINTS[a.difficulty] * a.time
+        gameScore += DIFFICULTY_POINTS[a.difficulty] * a.time
         currentStreak++
         totalRightAnswers++
       }
@@ -99,8 +101,10 @@ export default function App() {
     }
 
     if (longestStreak >= 3) {
-      finalScore += totalRightAnswers * longestStreak
+      streakScore += totalRightAnswers * longestStreak
     }
+
+    finalScore += gameScore + streakScore
 
     return finalScore
   }
